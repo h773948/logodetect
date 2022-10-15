@@ -1,31 +1,35 @@
 import cv2
 import numpy as np
 
-SOURCE_IMAGE1='ford.png'
-SOURCE_IMAGE2='ford2.jpg'
+SRC_FOLDER = '../pic/'
+OUTPUT_FOLDER = '../data/output/'
+RESULT_FOLDER = '../data/result/'
 
-OUTPUT_IMAGE1='keypoints1.jpg'
-OUTPUT_IMAGE2='keypoints2.jpg'
+SOURCE_IMAGE1 = SRC_FOLDER + 'ford.png'
+SOURCE_IMAGE2 = SRC_FOLDER + 'ford2.jpg'
 
-MATCHING_IMAGE='flann_matching.jpg'
+OUTPUT_IMAGE1 = OUTPUT_FOLDER + 'keypoints1.jpg'
+OUTPUT_IMAGE2 = OUTPUT_FOLDER + 'keypoints2.jpg'
+
+MATCHING_IMAGE= RESULT_FOLDER + 'flann_matching.jpg'
 
 ## képek beolvasása
-img1 = cv2.imread(SOURCE_IMAGE1);
-img2 = cv2.imread(SOURCE_IMAGE2);
+img1 = cv2.imread(SOURCE_IMAGE1)
+img2 = cv2.imread(SOURCE_IMAGE2)
 
 ## a képet szürkeárnyalatossá konvertáljuk
 gray_img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
 gray_img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
 
 ## jellemzőpontok detektálása 
-#orb = cv2.ORB_create()
-#keypoints1 = orb.detect(gray_img1)
-#keypoints2 = orb.detect(gray_img2)
+orb = cv2.ORB_create()
+keypoints1 = orb.detect(gray_img1)
+keypoints2 = orb.detect(gray_img2)
 
 
 ## kulcspont leírók számítása
-#keypoints1, descriptors1 = orb.compute(gray_img1, keypoints1)
-#keypoints2, descriptors2 = orb.compute(gray_img2, keypoints2)
+keypoints1, descriptors1 = orb.compute(gray_img1, keypoints1)
+keypoints2, descriptors2 = orb.compute(gray_img2, keypoints2)
 
 ## jellemzőpontok detektálása 
 surf = cv2.SIFT_create()

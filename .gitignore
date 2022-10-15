@@ -1,0 +1,10 @@
+.idea/*
+
+/*.jpg
+/*.jpeg
+/*.tif
+/*.png
+/*.mp4
+
+data/output
+data/result
