@@ -6,5 +6,5 @@
 /*.png
 /*.mp4
 
-data/output
-data/result
+data/output/*
+data/result/*
