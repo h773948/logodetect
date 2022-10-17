@@ -1,8 +1,8 @@
 import cv2
 import numpy as np
 
-SOURCE_IMAGE1='ford.png'
-SOURCE_IMAGE2='ford2.jpg'
+SOURCE_IMAGE1='../pic/ford.png'
+SOURCE_IMAGE2='../pic/ford2.jpg'
 
 OUTPUT_IMAGE1='keypoints1.jpg'
 OUTPUT_IMAGE2='keypoints2.jpg'
