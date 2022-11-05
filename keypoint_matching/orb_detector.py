@@ -1,7 +1,24 @@
 import cv2
 import numpy as np
 
-MAXPOINTS = 5
+# -------------------------------
+# --- PARAMS TO CHANGE IN UI ----
+# -------------------------------
+
+# Param: How many points to consider
+maxpoints = 5
+
+# Param: Search Perspective or Affine transform
+searchMode = "affine"
+# searchMode = "perspective"
+
+# Param: Use RANSAC point filtering
+MODE_RANSAC = True
+
+# ------------------------------------
+# --- END: PARAMS TO CHANGE IN UI ----
+# ------------------------------------
+
 DEBUG = False
 
 SRC_FOLDER = '../pic/'
@@ -9,12 +26,10 @@ OUTPUT_FOLDER = '../data/output/'
 RESULT_FOLDER = '../data/result/'
 
 SOURCE_IMAGE1 = SRC_FOLDER + 'ford.png'
-SOURCE_IMAGE2 = SRC_FOLDER + 'f2.jpg'
+SOURCE_IMAGE2 = SRC_FOLDER + 'f3.jpg'
 
 OUTPUT_IMAGE1 = OUTPUT_FOLDER + 'keypoints1.jpg'
 OUTPUT_IMAGE2 = OUTPUT_FOLDER + 'keypoints2.jpg'
-
-MATCHING_IMAGE= RESULT_FOLDER + 'flann_matching.jpg'
 
 ## képek beolvasása
 img1 = cv2.imread(SOURCE_IMAGE1)
@@ -48,29 +63,53 @@ trainIdxes = np.array([m1.trainIdx for m1 in matches])
 key_pts1 = np.array([key_point.pt for key_point in keypoints1]).reshape(-1, 1, 2)
 key_pts2 = np.array([key_point.pt for key_point in keypoints2]).reshape(-1, 1, 2)
 
-asd = []
+own_matches = []
 
 for match in matches:
     qIdx = match.queryIdx
     tIdx = match.trainIdx
-    asd.append((key_pts1[qIdx], key_pts2[tIdx]))
+    own_matches.append((key_pts1[qIdx], key_pts2[tIdx]))
 
-asd = np.array(asd).reshape(-1, 2, 2)
+own_matches = np.array(own_matches).reshape(-1, 2, 2)
 print("Found matches")
-print(asd.shape)
+print(own_matches.shape)
+h, w, _ = img2.shape
+
+if maxpoints > own_matches.shape[0]:
+    maxpoints = own_matches.shape[0]
 
 # Elso kep illesztese a masodikra
-M, mask = cv2.findHomography(asd[:,0,:MAXPOINTS], asd[:,1,:MAXPOINTS], cv2.RANSAC)
-print("Transformation matrix")
-print(M)
-h, w, _ = img2.shape
-img_1to2 = cv2.warpPerspective(img1.copy(), M, (w, h))
+if own_matches.shape[0] < 3:
+    print("Not Enough point match to get transform")
+    img_1to2 = np.zeros((h, w, 3))
+else:
+    if searchMode == "affine":
+        match_points1 = np.array(own_matches[:maxpoints, 0, :]).reshape(-1, 2).astype(float)
+        match_points2 = np.array(own_matches[:maxpoints, 1, :]).reshape(-1, 2).astype(float)
+        if MODE_RANSAC:
+            M = cv2.estimateAffine2D(match_points1, match_points2, method=cv2.RANSAC)
+        else:
+            M = cv2.estimateAffine2D(match_points1, match_points2)
+        print("Affine Transformation matrix")
+        print(M[0])
+        img_1to2 = cv2.warpAffine(img1.copy(), M[0], (w, h))
+    else:
+        if own_matches.shape[0] < 4:
+            print("Needs 4 matching points for Perspective transformation")
+        if MODE_RANSAC:
+            M, mask = cv2.findHomography(own_matches[:maxpoints,0,:], own_matches[:maxpoints,1,:], method=cv2.RANSAC)
+        else:
+            M, mask = cv2.findHomography(own_matches[:maxpoints,0,:], own_matches[:maxpoints,1,:])
+        print("Perspective Transformation matrix")
+        print(M)
+        img_1to2 = cv2.warpPerspective(img1.copy(), M, (w, h))
+
+cv2.imshow('input', img2)
+cv2.imshow('result', img_1to2)
+
 if DEBUG:
-    img3 = cv2.drawMatches(img1,keypoints1,img2,keypoints2,matches[:MAXPOINTS],None,flags=cv2.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
+    img3 = cv2.drawMatches(img1,keypoints1,img2,keypoints2,matches[:maxpoints],None,flags=cv2.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
     cv2.imshow('draw_matches', img3)
 
-cv2.imshow('asdasdasd', img2)
-
-cv2.imshow('result', img_1to2)
 cv2.waitKey()
 
