@@ -10,10 +10,13 @@ lowe_ratio = 0.7
 
 # Param: Search Perspective or Affine transform
 searchMode = "affine"
-# searchMode = "perspective"
+searchMode = "perspective"
 
 # Param: Use RANSAC point filtering
 MODE_RANSAC = True
+
+# Param: Deterimes to draw bounding box ot not
+DRAW_BOUNDING_BOX = True
 
 # ------------------------------------
 # --- END: PARAMS TO CHANGE IN UI ----
@@ -24,14 +27,40 @@ DEBUG = False
 SRC_FOLDER = '../pic/'
 OUTPUT_FOLDER = '../data/output/'
 RESULT_FOLDER = '../data/result/'
+ANNOTATIONS = '../data/train/logo_box_annotations.txt'
 
-SOURCE_IMAGE1 = SRC_FOLDER + 'ford.png'
-SOURCE_IMAGE2 = SRC_FOLDER + 'f4.jpg'
+SOURCE_IMAGE1_NAME = 'ford.png'
+# SOURCE_IMAGE2_NAME = 'f16.jpg'
+SOURCE_IMAGE2_NAME = '224886291.jpg'
+# SOURCE_IMAGE2_NAME = '255740214.jpg'
+
+SOURCE_IMAGE1 = SRC_FOLDER + SOURCE_IMAGE1_NAME
+SOURCE_IMAGE2 = SRC_FOLDER + SOURCE_IMAGE2_NAME
 
 OUTPUT_IMAGE1 = OUTPUT_FOLDER + 'keypoints1.jpg'
 OUTPUT_IMAGE2 = OUTPUT_FOLDER + 'keypoints2.jpg'
 
 MATCHING_IMAGE= RESULT_FOLDER + 'flann_matching.jpg'
+
+with open(ANNOTATIONS, 'r') as reader:
+    line = reader.readline()
+    while line != '':  # The EOF char is an empty string
+        line = reader.readline()
+        line_data = line.split(' ')
+        if line_data[0] == SOURCE_IMAGE2_NAME:
+            break
+
+train_class = None
+train_bounding_box = None
+if line == '':
+    print("No annotation found for this file")
+else:
+    train_class = line_data[2]
+    train_bounding_box = [
+        [int(line_data[3]), int(line_data[4])],
+        [int(line_data[5]), int(line_data[6])]
+    ]
+    print("Bounding Box: " + str(train_bounding_box))
 
 ## képek beolvasása
 img1 = cv2.imread(SOURCE_IMAGE1)
@@ -64,7 +93,30 @@ trainIdxS = np.array([(m1.trainIdx , m2.trainIdx ) for (m1, m2) in knn_matches])
 print(distances.shape)
 print(trainIdxS.shape)
 
+# For determining calculated output bounding box (the red one)
+transform_box = None
+img1_box = np.array([
+    [0,             0,              1],
+    [img1.shape[1], 0,              1],
+    [img1.shape[1], img1.shape[0],  1],
+    [0,             img1.shape[0],  1],
+]).reshape(-1,3)
+
+def get_brect_fomr_points(transform_box):
+    if (transform_box.shape[1] == 3): # if perspective
+        for vect in transform_box:
+            vect[0] = vect[0] / vect[2]
+            vect[1] = vect[1] / vect[2]
+    tr_brect = transform_box[:, :2]
+    # print(tr_brect)
+    tr_brect = cv2.boundingRect(tr_brect.astype(int))
+    tr_bound_rect = np.ndarray((2, 2), dtype=int)
+    tr_bound_rect[0] = tr_brect[0], tr_brect[1]
+    tr_bound_rect[1] = tr_brect[0] + tr_brect[2], tr_brect[1] + tr_brect[3]
+    return tr_bound_rect
+
 def run_transform_finding():
+    global transform_box
     own_matches = []
     # Lowe-féle arányteszt
     for i, (m, n) in enumerate(knn_matches):
@@ -95,6 +147,10 @@ def run_transform_finding():
             else:
                 print(M[0])
                 img_1to2 = cv2.warpAffine(img1.copy(), M[0], (w, h))
+
+                # Get the red bounding box
+                transform_box = np.transpose(np.matmul(M[0], np.transpose(img1_box)))
+                transform_box = get_brect_fomr_points(transform_box)
         else:
             if own_matches.shape[0] < 4:
                 print("Needs 4 matching points for Perspective transformation")
@@ -103,8 +159,20 @@ def run_transform_finding():
             else:
                 M, mask = cv2.findHomography(own_matches[:, 0, :], own_matches[:, 1, :])
             print("Perspective Transformation matrix")
-            print(M)
-            img_1to2 = cv2.warpPerspective(img1.copy(), M, (w, h))
+            if M is None:
+                print("NOT FOUND: Affine transformation")
+                img_1to2 = np.zeros((h, w, 3))
+            else:
+                print(M)
+                img_1to2 = cv2.warpPerspective(img1.copy(), M, (w, h))
+
+                transform_box = np.transpose(np.matmul(M, np.transpose(img1_box)))
+                transform_box = get_brect_fomr_points(transform_box)
+
+    if DRAW_BOUNDING_BOX and train_bounding_box is not None:
+        img_1to2 = cv2.rectangle(img_1to2, (train_bounding_box[0]), (train_bounding_box[1]), (0, 255, 0), 3)
+    if DRAW_BOUNDING_BOX and transform_box is not None:
+        img_1to2 = cv2.rectangle(img_1to2, (transform_box[0]), (transform_box[1]), (0, 0, 255), 3)
 
     cv2.imshow('input', img2)
     cv2.imshow('result', img_1to2)
