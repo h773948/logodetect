@@ -64,50 +64,53 @@ trainIdxS = np.array([(m1.trainIdx , m2.trainIdx ) for (m1, m2) in knn_matches])
 print(distances.shape)
 print(trainIdxS.shape)
 
-own_matches = []
+def run_transform_finding():
+    own_matches = []
+    # Lowe-féle arányteszt
+    for i, (m, n) in enumerate(knn_matches):
+        if m.distance < lowe_ratio * n.distance:
+            own_matches.append([keypoints1[i], keypoints2[m.trainIdx]])
 
-# Lowe-féle arányteszt
-for i, (m, n) in enumerate(knn_matches):
-    if m.distance < lowe_ratio * n.distance:
-        own_matches.append([keypoints1[i], keypoints2[m.trainIdx]])
+    own_matches = np.array([(kp1.pt, kp2.pt) for (kp1, kp2) in own_matches])
+    print("Matched points:")
+    print(own_matches.shape)
+    h, w, _ = img2.shape
 
-own_matches = np.array([(kp1.pt, kp2.pt) for (kp1, kp2) in own_matches])
-print("Matched points:")
-print(own_matches.shape)
-h, w, _ = img2.shape
-
-# Elso kep illesztese a masodikra
-if own_matches.shape[0] < 3:
-    print("Not Enough point match to get transform")
-    img_1to2 = np.zeros((h, w, 3))
-else:
-    if searchMode == "affine":
-        match_points1 = np.array(own_matches[:, 0, :]).reshape(-1, 2).astype(float)
-        match_points2 = np.array(own_matches[:, 1, :]).reshape(-1, 2).astype(float)
-        if MODE_RANSAC:
-            M = cv2.estimateAffine2D(match_points1, match_points2, method=cv2.RANSAC)
-        else:
-            M = cv2.estimateAffine2D(match_points1, match_points2)
-        print("Affine Transformation matrix")
-        if M[0] is None:
-            print("NOT FOUND: Affine transformation")
-            img_1to2 = np.zeros((h, w, 3))
-        else:
-            print(M[0])
-            img_1to2 = cv2.warpAffine(img1.copy(), M[0], (w, h))
+    # Elso kep illesztese a masodikra
+    if own_matches.shape[0] < 3:
+        print("Not Enough point match to get transform")
+        img_1to2 = np.zeros((h, w, 3))
     else:
-        if own_matches.shape[0] < 4:
-            print("Needs 4 matching points for Perspective transformation")
-        if MODE_RANSAC:
-            M, mask = cv2.findHomography(own_matches[:, 0, :], own_matches[:, 1, :], method=cv2.RANSAC)
+        if searchMode == "affine":
+            match_points1 = np.array(own_matches[:, 0, :]).reshape(-1, 2).astype(float)
+            match_points2 = np.array(own_matches[:, 1, :]).reshape(-1, 2).astype(float)
+            if MODE_RANSAC:
+                M = cv2.estimateAffine2D(match_points1, match_points2, method=cv2.RANSAC)
+            else:
+                M = cv2.estimateAffine2D(match_points1, match_points2)
+            print("Affine Transformation matrix")
+            if M[0] is None:
+                print("NOT FOUND: Affine transformation")
+                img_1to2 = np.zeros((h, w, 3))
+            else:
+                print(M[0])
+                img_1to2 = cv2.warpAffine(img1.copy(), M[0], (w, h))
         else:
-            M, mask = cv2.findHomography(own_matches[:, 0, :], own_matches[:, 1, :])
-        print("Perspective Transformation matrix")
-        print(M)
-        img_1to2 = cv2.warpPerspective(img1.copy(), M, (w, h))
+            if own_matches.shape[0] < 4:
+                print("Needs 4 matching points for Perspective transformation")
+            if MODE_RANSAC:
+                M, mask = cv2.findHomography(own_matches[:, 0, :], own_matches[:, 1, :], method=cv2.RANSAC)
+            else:
+                M, mask = cv2.findHomography(own_matches[:, 0, :], own_matches[:, 1, :])
+            print("Perspective Transformation matrix")
+            print(M)
+            img_1to2 = cv2.warpPerspective(img1.copy(), M, (w, h))
 
-cv2.imshow('input', img2)
-cv2.imshow('result', img_1to2)
+    cv2.imshow('input', img2)
+    cv2.imshow('result', img_1to2)
+
+# If params changed run this again
+run_transform_finding()
 
 if DEBUG:
     # Csak a jó párosítások érdekelnek bennünket, így azokat maszkoljuk
