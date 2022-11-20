@@ -25,13 +25,13 @@ class Window(QDialog):
         self.doubleSpinBar = QDoubleSpinBox()
         self.doubleSpinBar.setSingleStep(0.1)
         # creating combo box to select degree
-        self.degreeComboBox = QComboBox()
+        self.searchComboBox = QComboBox()
 
         self.mode_ransacCheckBox=QCheckBox()
         self.draw_bounding_boxCheckBox=QCheckBox()
 
         # adding items to the combo box
-        self.degreeComboBox.addItems(["affine", "perspective"])
+        self.searchComboBox.addItems(["affine", "perspective"])
 
         # creating a line edit
         self.nameLineEdit = QLineEdit()
@@ -67,7 +67,7 @@ class Window(QDialog):
         print("lowe ratio : {0}".format(self.doubleSpinBar.value()))
         
         #print("Person Name : {0}".format(self.nameLineEdit.text()))
-        print("searchmode : {0}".format(self.degreeComboBox.currentText()))
+        print("searchmode : {0}".format(self.searchComboBox.currentText()))
         print("Ransac : {0}".format(self.mode_ransacCheckBox.checkState()))
         print("Bounding box : {0}".format(self.draw_bounding_boxCheckBox.checkState()))
         
@@ -82,7 +82,7 @@ class Window(QDialog):
         # SOURCE_IMAGE2_NAME = '255740214.jpg'
         SOURCE_IMAGE1 = SRC_FOLDER + SOURCE_IMAGE1_NAME
         SOURCE_IMAGE2 = SRC_FOLDER + SOURCE_IMAGE2_NAME
-        surf_detect(self.doubleSpinBar.value(), self.degreeComboBox.currentText(), self.mode_ransacCheckBox.checkState(), self.draw_bounding_boxCheckBox.checkState(), SOURCE_IMAGE1, SOURCE_IMAGE2)
+        surf_detect(self.doubleSpinBar.value(), self.searchComboBox.currentText(), self.mode_ransacCheckBox.checkState(), self.draw_bounding_boxCheckBox.checkState(), SOURCE_IMAGE1, SOURCE_IMAGE2)
         
 #################################################################################################################################
         
@@ -106,7 +106,7 @@ class Window(QDialog):
         
 
         # for degree and adding combo box
-        layout.addRow(QLabel("search mode"), self.degreeComboBox)
+        layout.addRow(QLabel("search mode"), self.searchComboBox)
         layout.addRow(QLabel("MODE_RANSAC"), self.mode_ransacCheckBox)
         layout.addRow(QLabel("DRAW_BOUNDING_BOX"), self.draw_bounding_boxCheckBox)
 
