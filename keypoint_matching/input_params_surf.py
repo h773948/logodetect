@@ -82,20 +82,11 @@ class Window(QDialog):
         # SOURCE_IMAGE2_NAME = '255740214.jpg'
         SOURCE_IMAGE1 = SRC_FOLDER + SOURCE_IMAGE1_NAME
         SOURCE_IMAGE2 = SRC_FOLDER + SOURCE_IMAGE2_NAME
-        surf_detect(self.doubleSpinBar.text(), self.degreeComboBox.currentText(), self.mode_ransacCheckBox.checkState(), self.draw_bounding_boxCheckBox.checkState(), SOURCE_IMAGE1, SOURCE_IMAGE2)
+        surf_detect(self.doubleSpinBar.value(), self.degreeComboBox.currentText(), self.mode_ransacCheckBox.checkState(), self.draw_bounding_boxCheckBox.checkState(), SOURCE_IMAGE1, SOURCE_IMAGE2)
         
 #################################################################################################################################
         
-        """ error
-        Traceback (most recent call last):
-  File "D:\suli\haladokepfel\logodetect\keypoint_matching\input_params_surf.py", line 85, in getInfo
-    surf_detect(self.doubleSpinBar.text(), self.degreeComboBox.currentText(), self.mode_ransacCheckBox.checkState(), self.draw_bounding_boxCheckBox.checkState(), SOURCE_IMAGE1, SOURCE_IMAGE2)
-  File "D:\suli\haladokepfel\logodetect\keypoint_matching\surf_detector.py", line 188, in surf_detect
-    run_transform_finding()
-  File "D:\suli\haladokepfel\logodetect\keypoint_matching\surf_detector.py", line 130, in run_transform_finding
-    if m.distance < lowe_ratio * n.distance:
-TypeError: can't multiply sequence by non-int of type 'float'
-        """
+
         
         
         # closing the window
