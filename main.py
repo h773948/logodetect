@@ -1,6 +1,8 @@
 import sys
+
+import cv2
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QPushButton, QAction, QLineEdit, QMessageBox, QLabel, \
-    QRadioButton
+    QRadioButton, QFileDialog
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import pyqtSlot
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -30,6 +32,9 @@ class App(QMainWindow):
         self.label1.setText("Logo url:")
         self.label1.setFont(QFont('Arial', 12))
 
+        self.but1 = QPushButton('Load logo', self)
+        self.but1.move(150, 25)
+
         # Create textbox
         self.textbox1 = QLineEdit(self)
         self.textbox1.move(20, 60)
@@ -39,6 +44,9 @@ class App(QMainWindow):
         self.label2.move(20, 100)
         self.label2.setText("Picture url:")
         self.label2.setFont(QFont('Arial', 12))
+
+        self.but2 = QPushButton('Load picture', self)
+        self.but2.move(150, 105)
 
         # Create textbox
         self.textbox2 = QLineEdit(self)
@@ -67,6 +75,8 @@ class App(QMainWindow):
 
         # connect button to function on_click
         self.button.clicked.connect(self.on_click)
+        self.but1.clicked.connect(self.browselogo)
+        self.but2.clicked.connect(self.browsepicture)
         self.show()
 
     @pyqtSlot()
@@ -89,6 +99,14 @@ class App(QMainWindow):
             #self.label.setText("You are male")
             surf_detector = False
             orb_detector = True
+
+    def browselogo(self):
+        fname = QFileDialog.getOpenFileName(self, 'Open file', 'E:\Python Projects', 'Images (*.png, *.jpg)')
+        self.textbox1.setText(fname[0])
+
+    def browsepicture(self):
+        fname = QFileDialog.getOpenFileName(self, 'Open file', 'E:\Python Projects', 'Images (*.png, *.jpg)')
+        self.textbox2.setText(fname[0])
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
