@@ -1,17 +1,20 @@
 import sys
 from input_params_orb import *
 from input_params_surf import *
+from input_params_cnn import *
 import cv2
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QPushButton, QAction, QLineEdit, QMessageBox, QLabel, \
     QRadioButton, QFileDialog
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import pyqtSlot
 from PyQt5 import QtCore, QtGui, QtWidgets
+from cnn_detector import cnn_detector
 
 logo = None
 pic = None
 surf_detector = False
 orb_detector = False
+cnn_detector = False
 SOURCE_IMAGE1 = " "
 SOURCE_IMAGE2 = " "
 window1=None
@@ -74,6 +77,14 @@ class App(QMainWindow):
         #self.radioButton2.setGeometry(QtCore.QRect(180, 150, 95, 20))
         #self.radioButton2.toggled.connect(self.orb_selected)
 
+        self.radiobutton3 = QRadioButton(self)
+        self.radiobutton3.setText("cnn_detector")
+        self.radiobutton3.setGeometry(280, 175, 140, 60)
+        self.radiobutton3.setChecked(False)
+        self.radiobutton3.toggled.connect(self.cnn_selected)
+        #self.radioButton3.setGeometry(QtCore.QRect(180, 150, 95, 20))
+        #self.radioButton3.toggled.connect(self.orb_selected)
+
         # Create a button in the window
         self.button = QPushButton('Next', self)
         self.button.move(20, 225)
@@ -108,6 +119,14 @@ class App(QMainWindow):
             self.window2.show()
             #sys.exit(app.exec())
             print("asd1")
+        elif(self.radiobutton3.isChecked()==True):
+            print("logo ",SOURCE_IMAGE1)
+            print("pic ",SOURCE_IMAGE2)
+            #app1 = QApplication(sys.argv)
+            self.window2 = WindowCNN(pic)
+            self.window2.show()
+            #sys.exit(app.exec())
+            print("asd12")
 
         else:
             print("orb ",self.radiobutton1.isChecked())
@@ -125,12 +144,21 @@ class App(QMainWindow):
             #self.label.setText("You are male")
             surf_detector = True
             orb_detector = False
+            cnn = False
 
     def orb_selected(self, selected):
         if selected:
             #self.label.setText("You are male")
             surf_detector = False
+            cnn_detector = False
             orb_detector = True
+
+    def cnn_selected(self, selected):
+        if selected:
+            #self.label.setText("You are male")
+            surf_detector = False
+            orb_detector = False
+            cnn_detector = True
 
     def browselogo(self):
         fname = QFileDialog.getOpenFileName(self, 'Open file', 'C:/Users/ronya/Desktop/',"Image files (*.jpg *.png)")
