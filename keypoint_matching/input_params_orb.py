@@ -1,16 +1,18 @@
 # importing libraries
 from PyQt5.QtWidgets import *
-from orb_detector import *
+from orb_detector import orb_detect
 import sys
+
 
 # creating a class
 # that inherits the QDialog class
-class Window(QDialog):
+class WindowO(QDialog):
 
     # constructor
-    def __init__(self):
-        super(Window, self).__init__()
-
+    def __init__(self,logo,pic):
+        super(WindowO, self).__init__()
+        self.logo=logo
+        self.pic=pic
         # setting window title
         self.setWindowTitle("Orb Detector")
 
@@ -75,7 +77,7 @@ class Window(QDialog):
 ###############################################################################################################################
         """
         teszt.....
-        """
+        
         SRC_FOLDER = '../pic/'
         SOURCE_IMAGE1_NAME = 'ford.png'
         SOURCE_IMAGE2_NAME = 'ford2.jpg'
@@ -83,8 +85,9 @@ class Window(QDialog):
         # SOURCE_IMAGE2_NAME = '255740214.jpg'
         SOURCE_IMAGE1 = SRC_FOLDER + SOURCE_IMAGE1_NAME
         SOURCE_IMAGE2 = SRC_FOLDER + SOURCE_IMAGE2_NAME
-        orb_detect(self.intSpinBar.text(), self.searchComboBox.currentText(), self.mode_ransacCheckBox.checkState(), self.draw_bounding_boxCheckBox.checkState(), SOURCE_IMAGE1, SOURCE_IMAGE2)
-        
+        """
+        #orb_detect(self.intSpinBar.text(), self.searchComboBox.currentText(), self.mode_ransacCheckBox.checkState(), self.draw_bounding_boxCheckBox.checkState(), SOURCE_IMAGE1, SOURCE_IMAGE2)
+        orb_detect(self.intSpinBar.text(), self.searchComboBox.currentText(), self.mode_ransacCheckBox.checkState(), self.draw_bounding_boxCheckBox.checkState(), self.logo, self.pic)
 #################################################################################################################################
         # closing the window
         self.close()
@@ -117,13 +120,13 @@ class Window(QDialog):
 # main method
 if __name__ == '__main__':
 
-    
+
     # create pyqt5 app
     
     app = QApplication(sys.argv)
 
     # create the instance of our Window
-    window = Window()
+    window = WindowO()
 
     # showing the window
     window.show()

@@ -5,12 +5,13 @@ import sys
 
 # creating a class
 # that inherits the QDialog class
-class Window(QDialog):
+class WindowS(QDialog):
 
     # constructor
-    def __init__(self):
-        super(Window, self).__init__()
-
+    def __init__(self,logo,pic):
+        super(WindowS, self).__init__()
+        self.logo=logo
+        self.pic=pic
         # setting window title
         self.setWindowTitle("Surf Detector")
 
@@ -74,7 +75,7 @@ class Window(QDialog):
 ###############################################################################################################################
         """
         teszt.....
-        """
+        
         SRC_FOLDER = '../pic/'
         SOURCE_IMAGE1_NAME = 'ford.png'
         SOURCE_IMAGE2_NAME = 'ford2.jpg'
@@ -82,8 +83,11 @@ class Window(QDialog):
         # SOURCE_IMAGE2_NAME = '255740214.jpg'
         SOURCE_IMAGE1 = SRC_FOLDER + SOURCE_IMAGE1_NAME
         SOURCE_IMAGE2 = SRC_FOLDER + SOURCE_IMAGE2_NAME
-        surf_detect(self.doubleSpinBar.value(), self.searchComboBox.currentText(), self.mode_ransacCheckBox.checkState(), self.draw_bounding_boxCheckBox.checkState(), SOURCE_IMAGE1, SOURCE_IMAGE2)
-        
+        """
+        print("logosurf ",self.logo)
+        print("picsurf ",self.pic)
+        #surf_detect(self.doubleSpinBar.value(), self.searchComboBox.currentText(), self.mode_ransacCheckBox.checkState(), self.draw_bounding_boxCheckBox.checkState(), SOURCE_IMAGE1, SOURCE_IMAGE2)
+        surf_detect(self.doubleSpinBar.value(), self.searchComboBox.currentText(), self.mode_ransacCheckBox.checkState(), self.draw_bounding_boxCheckBox.checkState(), self.logo, self.pic)
 #################################################################################################################################
         
 
@@ -116,7 +120,7 @@ class Window(QDialog):
         # setting layout
         self.formGroupBox.setLayout(layout)
 
-
+'''
 # main method
 if __name__ == '__main__':
 
@@ -124,10 +128,11 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
 
     # create the instance of our Window
-    window = Window()
+    window = WindowS()
 
     # showing the window
     window.show()
 
     # start the app
     sys.exit(app.exec())
+'''

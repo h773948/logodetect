@@ -21,7 +21,7 @@ DRAW_BOUNDING_BOX = True
 # ------------------------------------
 # --- END: PARAMS TO CHANGE IN UI ----
 # ------------------------------------
-
+"""
 SRC_FOLDER = '../pic/'
 SOURCE_IMAGE1_NAME = 'ford.png'
 # SOURCE_IMAGE2_NAME = 'f16.jpg'
@@ -32,7 +32,7 @@ SOURCE_IMAGE2_NAME = 'ford2.jpg'
 SOURCE_IMAGE1 = SRC_FOLDER + SOURCE_IMAGE1_NAME
 SOURCE_IMAGE2 = SRC_FOLDER + SOURCE_IMAGE2_NAME
 
-
+"""
 
 def surf_detect(lowe_ratio,searchMode,MODE_RANSAC,DRAW_BOUNDING_BOX,SOURCE_IMAGE1,SOURCE_IMAGE2):
     DEBUG = False
@@ -54,7 +54,7 @@ def surf_detect(lowe_ratio,searchMode,MODE_RANSAC,DRAW_BOUNDING_BOX,SOURCE_IMAGE
         while line != '':  # The EOF char is an empty string
             line = reader.readline()
             line_data = line.split(' ')
-            if line_data[0] == SOURCE_IMAGE2_NAME:
+            if line_data[0] == SOURCE_IMAGE2:
                 break
 
     train_class = None
