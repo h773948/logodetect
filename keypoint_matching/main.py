@@ -27,7 +27,7 @@ class App(QMainWindow):
         self.title = 'Logo detection'
         self.left = 50
         self.top = 50
-        self.width = 350
+        self.width = 400
         self.height = 350
         self.initUI()
 
