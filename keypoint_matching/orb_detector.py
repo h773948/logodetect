@@ -49,10 +49,11 @@ def orb_detect(maxpoints,searchMode,MODE_RANSAC,DRAW_BOUNDING_BOX,SOURCE_IMAGE1,
 
     with open(ANNOTATIONS, 'r') as reader:
         line = reader.readline()
+        img2_name = SOURCE_IMAGE2.split('/')[-1] # only filename + extension
         while line != '':  # The EOF char is an empty string
             line = reader.readline()
             line_data = line.split(' ')
-            if line_data[0] == SOURCE_IMAGE2:
+            if line_data[0] == img2_name:
                 break
 
     train_class = None
@@ -133,8 +134,7 @@ def orb_detect(maxpoints,searchMode,MODE_RANSAC,DRAW_BOUNDING_BOX,SOURCE_IMAGE1,
         tr_bound_rect[1] = tr_brect[0] + tr_brect[2], tr_brect[1] + tr_brect[3]
         return tr_bound_rect
 
-    def run_transform_finding():
-        global maxpoints
+    def run_transform_finding(maxpoints):
         if maxpoints > own_matches.shape[0]:
             maxpoints = own_matches.shape[0]
 
@@ -181,7 +181,7 @@ def orb_detect(maxpoints,searchMode,MODE_RANSAC,DRAW_BOUNDING_BOX,SOURCE_IMAGE1,
         cv2.imshow('result', img_1to2)
 
     # If params changed run this again
-    run_transform_finding()
+    run_transform_finding(maxpoints)
 
     if DEBUG:
         img3 = cv2.drawMatches(img1,keypoints1,img2,keypoints2,matches[:maxpoints],None,flags=cv2.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)

@@ -87,7 +87,8 @@ class WindowO(QDialog):
         SOURCE_IMAGE2 = SRC_FOLDER + SOURCE_IMAGE2_NAME
         """
         #orb_detect(self.intSpinBar.text(), self.searchComboBox.currentText(), self.mode_ransacCheckBox.checkState(), self.draw_bounding_boxCheckBox.checkState(), SOURCE_IMAGE1, SOURCE_IMAGE2)
-        orb_detect(self.intSpinBar.text(), self.searchComboBox.currentText(), self.mode_ransacCheckBox.checkState(), self.draw_bounding_boxCheckBox.checkState(), self.logo, self.pic)
+        if (int(self.intSpinBar.text()) >= 3 and self.searchComboBox.currentText() == "affine") or int(self.intSpinBar.text()) >=4: # maxpoints at least 3
+            orb_detect(int(self.intSpinBar.text()), self.searchComboBox.currentText(), self.mode_ransacCheckBox.checkState(), self.draw_bounding_boxCheckBox.checkState(), self.logo, self.pic)
 #################################################################################################################################
         # closing the window
         self.close()

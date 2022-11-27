@@ -36,7 +36,6 @@ SOURCE_IMAGE2 = SRC_FOLDER + SOURCE_IMAGE2_NAME
 
 def surf_detect(lowe_ratio,searchMode,MODE_RANSAC,DRAW_BOUNDING_BOX,SOURCE_IMAGE1,SOURCE_IMAGE2):
     DEBUG = False
-
     
     OUTPUT_FOLDER = '../data/output/'
     RESULT_FOLDER = '../data/result/'
@@ -51,10 +50,11 @@ def surf_detect(lowe_ratio,searchMode,MODE_RANSAC,DRAW_BOUNDING_BOX,SOURCE_IMAGE
 
     with open(ANNOTATIONS, 'r') as reader:
         line = reader.readline()
+        img2_name = SOURCE_IMAGE2.split('/')[-1] # only filename + extension
         while line != '':  # The EOF char is an empty string
             line = reader.readline()
             line_data = line.split(' ')
-            if line_data[0] == SOURCE_IMAGE2:
+            if line_data[0] == img2_name:
                 break
 
     train_class = None
@@ -76,6 +76,8 @@ def surf_detect(lowe_ratio,searchMode,MODE_RANSAC,DRAW_BOUNDING_BOX,SOURCE_IMAGE
     ## a képet szürkeárnyalatossá konvertáljuk
     gray_img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
     gray_img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
+
+    print("beolvasas megvan")
 
     ## jellemzőpontok detektálása
     sift = cv2.SIFT_create()
@@ -108,6 +110,8 @@ def surf_detect(lowe_ratio,searchMode,MODE_RANSAC,DRAW_BOUNDING_BOX,SOURCE_IMAGE
         [img1.shape[1], img1.shape[0],  1],
         [0,             img1.shape[0],  1],
     ]).reshape(-1,3)
+
+    print("idaigmegvan10")
 
     def get_brect_fomr_points(transform_box):
         if (transform_box.shape[1] == 3): # if perspective
